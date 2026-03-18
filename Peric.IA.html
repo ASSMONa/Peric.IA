@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório Social</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="s  tylesheet">
+    <link rel="icon" type="image/png" href="favicon-32x32.png">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        label {
+            font-weight: 600;
+            display: block;
+            margin-top: 15px;
+            color: #555;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        textarea {
+            height: 100px;
+        }
+
+        .buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #4a90e2;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button.secondary {
+            background: #ccc;
+            color: #333;
+        }
+
+        nav {
+            width: fit-content;
+            border: 1px solid #666;
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: no-wrap;
+        }
+
+        nav input {
+            display: none;
+        }
+
+        nav label {
+            font-family: sans-serif;
+            padding: 10px 16px;
+            border-right: 1px solid #ccc;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #0088cc;
+            margin-top: 0;
+        }
+
+        nav label:last-of-type {
+            border-right: 0;
+        }
+
+        nav label:hover {
+            background: #eee;
+            color: #0088cc;
+        }
+
+        nav input:checked+label {
+            background: #becbff;
+            color: #0088cc;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>RELATÓRIO SOCIAL</h2>
+
+        <form id="form">
+
+            <div class="step active">
+                <label>Nome do(a) Periciando(a):</label>
+                <input type="text" id="nome">
+            </div>
+
+            <div class="step">
+                <label>Sexo:</label>
+                <nav>
+                    <input type="radio" name="sexo" id="masculino" /> <label for="masculino">Masculino</label>
+                    <input type="radio" name="sexo" id="feminino" /> <label for="feminino">Feminino</label>
+                </nav>
+                <label>Data de Nascimento:</label>
+                <input type="date" id="dataNascimento" onchange="calcularIdade()">
+
+                <label>Idade:</label>
+                <input type="number" id="idade" readonly>
+            </div>
+
+            <div class="step">
+                <label>CONTEXTO SOCIOECONÔMICO</label>
+                <textarea id="contexto"
+                    placeholder="Descreva audio um resumo do contexto socioeconômico da parte autora."></textarea>
+
+            </div>
+            <div class="step">
+                <label>1) Qual a renda da parte autora?</label>
+                <textarea id="q1" placeholder="Descreva em audio como a parte autora se sustenta."></textarea>
+            </div>
+
+            <div class="step">
+                <label>2) Quantas pessoas vivem sob o mesmo teto?</label>
+                <textarea id="q2" placeholder="Descreva em audio como a parte autora se sustenta."></textarea>
+            </div>
+
+            <div class="step">
+                <label>3) Qual a renda mensal de cada pessoa?</label>
+                <textarea id="q3" placeholder="Descreva em audio os valores e a origem da renda."></textarea>
+            </div>
+
+            <div class="step">
+                <label>4) Qual o gasto mensal da família?</label>
+                <textarea id="q4"
+                    placeholder="Descreva em audio os itens que compõem o gasto mensal, tais como alimentação, moradia, educação, saúde, lazer, vestuário, higiene, transporte, previdência social, etc."></textarea>
+            </div>
+
+            <div class="step">
+                <label>5) Descrever a residência:</label>
+                <textarea id="q5"
+                    placeholder="Descreva em audio (quantidade de cômodos quais são, condicão de conservação, acesso a água encanada, saneamento básico, energia elétrica, etc.)"></textarea>
+            </div>
+
+            <div class="step">
+                <label>6) A família possui meios de transporte?</label>
+                <textarea id="q6" placeholder="Descreva em audio os meios de transporte da família."></textarea>
+            </div>
+
+            <div class="buttons">
+                <button type="button" class="secondary" onclick="voltar()">Voltar</button>
+                <button type="button" onclick="proximo()">Próximo</button>
+            </div>
+
+        </form>
+    </div>
+
+    <script>
+        function calcularIdade() {
+            const dataNascimento = document.getElementById('dataNascimento').value;
+            if (!dataNascimento) return;
+
+            const hoje = new Date();
+            const dataNasc = new Date(dataNascimento);
+
+            let idade = hoje.getFullYear() - dataNasc.getFullYear();
+
+            const mes = hoje.getMonth() - dataNasc.getMonth();
+            if (mes < 0 || (mes === 0 && hoje.getDate() < dataNasc.getDate())) {
+                idade--;
+            }
+
+            document.getElementById('idade').value = idade;
+        }
+
+        let passo = 0;
+        const steps = document.querySelectorAll('.step');
+
+        function mostrarPasso() {
+            steps.forEach((s, i) => {
+                s.classList.toggle('active', i === passo);
+            });
+        }
+        function gerarCamposRenda() {
+            const nomes = document.querySelectorAll('.nomePessoa');
+            const container = document.getElementById('listaRendas');
+
+            container.innerHTML = "";
+
+            nomes.forEach((input, index) => {
+                const nome = input.value;
+
+                if (nome.trim() !== "") {
+                    const div = document.createElement('div');
+
+                    div.innerHTML = `
+                <label>${nome}</label>
+                <input type="number" placeholder="Renda" class="rendaValor">
+
+                <select class="rendaOrigem">
+                    <option value="">Origem da renda</option>
+                    <option value="Trabalho">Trabalho</option>
+                    <option value="Benefício assistencial">Benefício assistencial</option>
+                    <option value="Aposentadoria">Aposentadoria</option>
+                    <option value="Outro">Outro</option>
+                </select>
+                <hr>
+            `;
+
+                    container.appendChild(div);
+                }
+            });
+        }
+        function proximo() {
+            if (passo < steps.length - 1) {
+                passo++;
+                mostrarPasso();
+            } else {
+                salvarHTML();
+            }
+        }
+
+        function voltar() {
+            if (passo > 0) {
+                passo--;
+                mostrarPasso();
+            }
+        }
+
+        function adicionarPessoa() {
+            const tabela = document.getElementById('tabela');
+            const linha = document.createElement('tr');
+            linha.innerHTML = `
+                <td><input type="text"></td>
+                <td><input type="number"></td>
+                <td><input type="number"></td>
+                <td><input type="text"></td>
+            `;
+            tabela.appendChild(linha);
+        } function adicionarPessoa() {
+            const tabela = document.getElementById('tabela');
+
+            const linha = document.createElement('tr');
+            linha.innerHTML = `
+        <td><input type="text"></td>
+        <td><input type="number"></td>
+        <td><input type="number" class="renda"></td>
+        <td><input type="text"></td>
+    `;
+
+            tabela.appendChild(linha);
+        }
+
+        function removerPessoa() {
+            const tabela = document.getElementById('tabela');
+
+            if (tabela.rows.length > 2) {
+                tabela.deleteRow(-1);
+            }
+        }
+
+        function salvarHTML() {
+            const nome = document.getElementById('nome').value || 'relatorio';
+
+            const conteudo = `
+    <html>
+    <body>
+    <h2>RELATÓRIO SOCIAL</h2>
+
+    <p><strong>Processo nº:</strong> ${document.getElementById('processo').value}</p>
+    <p><strong>Nome:</strong> ${nome}</p>
+    <p><strong>Sexo:</strong> ${document.getElementById('sexo').value}</p>
+    <p><strong>Idade:</strong> ${document.getElementById('idade').value}</p>
+    <p><strong>Atividade Habitual:</strong> ${document.getElementById('atividadeHabitual').value}</p>
+    <p><strong>Atividade Secundária:</strong> ${document.getElementById('atividadeSecundaria').value}</p>
+
+    <h3>QUESITOS</h3>
+
+    <p>1) ${document.getElementById('q1').value}</p>
+    <p>2) ${document.getElementById('q2').value}</p>
+    <p>3) ${document.getElementById('q3').value}</p>
+    <p>4) ${document.getElementById('q4').value}</p>
+    <p>5) ${document.getElementById('q5').value}</p>
+    <p>6) ${document.getElementById('q6').value}</p>
+
+    <h3>Relatório</h3>
+    <p>${document.getElementById('relatorio').value}</p>
+
+    </body>
+    </html>
+    `;
+
+            const blob = new Blob([conteudo], { type: 'text/html' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = nome.replace(/\s+/g, '_') + '.html';
+            link.click();
+        }
+
+        function removerPessoa() {
+            const tabela = document.getElementById('tabela');
+            const linhas = tabela.getElementsByTagName('tr');
+            if (linhas.length > 1) {
+                tabela.removeChild(linhas[linhas.length - 1]);
+            }
+        }
+
+        function calcularRendaTotal() {
+            const tabela = document.getElementById('tabela');
+            const linhas = tabela.getElementsByTagName('tr');
+            let rendaTotal = 0;
+            for (let i = 1; i < linhas.length; i++) {
+                const renda = linhas[i].getElementsByTagName('td')[2].getElementsByTagName('input')[0].value;
+                rendaTotal += parseInt(renda);
+            }
+            document.getElementById('q3').value = rendaTotal;
+        }
+
+
+        function salvarHTML() {
+            const nome = document.getElementById('nome').value || 'relatorio';
+
+            // pegar sexo corretamente
+            const sexoSelecionado = document.querySelector('input[name="sexo"]:checked');
+            const sexo = sexoSelecionado ? sexoSelecionado.nextElementSibling.innerText : "Não informado";
+
+            const conteudo = `
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Relatório Social</title>
+    </head>
+    <body style="font-family: Arial; padding:20px;">
+    
+    <h2>RELATÓRIO SOCIAL</h2>
+
+    <p><strong>Nome:</strong> ${nome}</p>
+    <p><strong>Sexo:</strong> ${sexo}</p>
+    <p><strong>Idade:</strong> ${document.getElementById('idade').value}</p>
+
+    <h3>Contexto Socioeconômico</h3>
+    <p>${document.getElementById('contexto').value}</p>
+
+    <h3>Quesitos</h3>
+
+    <p><strong>1) Qual a renda da parte autora?</strong> ${document.getElementById('q1').value}</p>
+    <p><strong>2) Quantas pessoas vivem sob o mesmo teto?</strong> ${document.getElementById('q2').value}</p>
+    <p><strong>3) Qual a renda mensal de cada pessoa?</strong> ${document.getElementById('q3').value}</p>
+    <p><strong>4) Qual o gasto mensal da família?</strong> ${document.getElementById('q4').value}</p>
+    <p><strong>5) Descrever qual a residência da parte autora (quantidade de cômodos, água encanada, saneamento básico, energia elétrica)</strong> ${document.getElementById('q5').value}</p>
+    <p><strong>6) A família possui meios de transporte?</strong> ${document.getElementById('q6').value}</p>
+
+    </body>
+    </html>
+    `;
+
+            const blob = new Blob([conteudo], { type: 'text/html' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = nome.replace(/\s+/g, '_') + '.html';
+            link.click();
+        }
+        const conteudo = `
+<html>
+<body>
+
+<h2>RELATÓRIO SOCIAL</h2>
+
+<p><strong>Nome:</strong> ${getValor('nome')}</p>
+<p><strong>Idade:</strong> ${getValor('idade')}</p>
+
+<h3>Contexto</h3>
+<p>${getValor('contexto')}</p>
+
+<h3>Quesitos</h3>
+
+<p>1) ${getValor('q1')}</p>
+<p>2) ${getValor('q2')}</p>
+<p>3) ${getValor('q3')}</p>
+<p>4) ${getValor('q4')}</p>
+<p>5) ${getValor('q5')}</p>
+<p>6) ${getValor('q6')}</p>
+
+</body>
+</html>
+`;
+    </script>
+    </script>
+
+</body>
+
+</html>
